@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg"><title>Ellipse 1</title>
+
+<defs>
+<pattern id="Pattern" x="0" y="0" width=".125" height=".0625">
+<circle cx="3" cy="3" r="2" fill="#000099" />
+</pattern>
+</defs>
+
+<ellipse cx="100" cy="100" rx="20" ry="50" fill="url(#Pattern)" stroke-width="3" stroke="#000099" />
+</svg>

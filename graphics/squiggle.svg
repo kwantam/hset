@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg"><title>Squiggle</title>
+
+<defs>
+<pattern id="Pattern" x="0" y="0" width=".125" height=".0625">
+<circle cx="3" cy="3" r="2" fill="#000099" />
+</pattern>
+</defs>
+
+<path stroke="#000099" stroke-width="3" fill="url(#Pattern)"
+ d="m 60,20 q -50,-5 -20,20 q 20,20 0,40 q -50,40 0,80 q 50,5 20,-20 q -20,-20 0,-40 q 50,-40 0,-80" />
+
+<path stroke="#000099" stroke-width="3" fill="url(#Pattern)"
+ d="m 110,20 q -50,-5 -20,20 q 20,20 0,40 q -50,40 0,80 q 50,5 20,-20 q -20,-20 0,-40 q 50,-40 0,-80" />
+
+<path stroke="#000099" stroke-width="3" fill="url(#Pattern)"
+ d="m 160,20 q -50,-5 -20,20 q 20,20 0,40 q -50,40 0,80 q 50,5 20,-20 q -20,-20 0,-40 q 50,-40 0,-80" />
+
+</svg>

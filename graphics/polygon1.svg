@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg"><title>Polygon 1</title>
+
+<defs>
+<pattern id="Pattern" x="0" y="0" width=".125" height=".0625">
+<circle cx="3" cy="3" r="2" fill="#000099" />
+</pattern>
+</defs>
+
+<path stroke="#000099" stroke-width="3" fill="url(#Pattern)"
+ d="m 100,20 l -30,60 l 30,60 l 30,-60 z" />
+</svg>
