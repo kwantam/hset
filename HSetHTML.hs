@@ -23,6 +23,10 @@ import Data.Maybe (fromMaybe)
 import Control.Monad.State (evalState)
 import System.Random (mkStdGen,randomIO)
 
+onClick = strAttr "onClick"
+
+clickScript o n cx = "if (this.src == "++o++") { this.src = "++n++"; "++cx++".checked=true; } else { this.src = "++o++"; "++cx++".checked=false; }"
+
 newPage [] _ _ = endGame "You win!"
 newPage d  n r | take 1 (identifySets $ decompressDeck d) == [] = endGame "No more sets."
                | take 1 (identifySets $ decompressDeck (take n d)) == [] = newPage d (n+3) r
@@ -52,9 +56,11 @@ writePage d n m = h3 << m +++
     where dc = show d
           nc = show n
           cardsOnTable = everyThree br $ map cardHTML $ zip [0..] (take n d)
-          cardHTML (x,c) = (image ! [src $ "http://web.jfet.org/~kwantam/images/cards/" 
-	                                   ++ show c ++ ".png"]) 
-                           +++ spaceHtml +++ checkbox ('c':show x) "c"
+          cardHTML (x,c) = (image ! [src oImg, onClick $ clickScript oImg nImg cx])
+                           +++ spaceHtml +++ checkbox cx "c"
+              where oImg = "/~kwantam/images/cards/" ++ show c ++ ".png"
+                    nImg = "/~kwantam/images/cards/" ++ show c ++ "r.png"
+                    cx = 'c':show x
 	  instr = "Choose a set, or just hit Submit if you think there aren't any."
 
 takeChecked _  [] = []
