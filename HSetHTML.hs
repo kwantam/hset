@@ -1,13 +1,14 @@
+{-# LANGUAGE CPP #-}
 
 {- Copyright (C) 2009 Riad S Wahby <rsw@jfet.org>
  - 
-## This file is part of hset
-##
-##  hset is free software.  It comes without any warranty, to
-##  to the extent permitted by applicable law.  You can redistribute it
-##  and/or modify it under the terms of the Do What The Fuck You Want To
-##  Public License, Version 2, as published by Sam Hocevar.  See
-##  the COPYING file or http://sam.zoy.org/wtfpl/COPYING for more details
+--  This file is part of hset
+--
+--  hset is free software.  It comes without any warranty, to
+--  to the extent permitted by applicable law.  You can redistribute it
+--  and/or modify it under the terms of the Do What The Fuck You Want To
+--  Public License, Version 2, as published by Sam Hocevar.  See
+--  the COPYING file or http://sam.zoy.org/wtfpl/COPYING for more details
  -
  -}
 
@@ -22,6 +23,15 @@ import Data.List ((\\))
 import Data.Maybe (fromMaybe)
 import Control.Monad.State (evalState)
 import System.Random (mkStdGen,randomIO)
+import qualified Data.Digest.MD5 as MD5
+import qualified Codec.Binary.BubbleBabble as BuBa
+import Data.Char (ord)
+
+#ifndef __SERVER_SECRET_KEY__
+#define __SERVER_SECRET_KEY__ "asdf"
+#endif
+
+serverSecretKey = __SERVER_SECRET_KEY__
 
 onClick = strAttr "onclick"
 
@@ -51,6 +61,7 @@ writePage d n m = h3 << m +++
 		  form ! [method "POST", name "sform"]
                        << ( hidden "setDeck" dc : 
                             hidden "numCards" nc :
+                            hidden "verToken" ( vtok d n ) :
                             cardsOnTable ++
                             [br +++ submit "" "Submit"] )
     where dc = show d
@@ -69,13 +80,16 @@ takeChecked (d:dc) (r:rc) = if r == "c"
                              then d : takeChecked dc rc
                              else takeChecked dc rc
 
+vtok d n = BuBa.encode $ MD5.hash $ map (fromIntegral.ord) $ show (serverSecretKey,d,n)
+
 showGreeting n = writePage dd 12 "Welcome!"
     where dd = compressDeck $ evalState mkRandDeck n
 
 cgiMain n = do nc <- liftM (read.(fromMaybe "0")) $ getInput "numCards"
                dc <- liftM (read.(fromMaybe "[]")) $ getInput "setDeck"
                rz <- mapM ((liftM $ fromMaybe "[]").getInput) $ take nc (map (('c':).show) [0..])
-               if nc == 0
+               vt <- liftM (read.(fromMaybe "")) $ getInput "verToken"
+               if nc == 0 || vt /= vtok dc nc
                 then output $ renderHtml $ body << (showGreeting n)
                 else output $ renderHtml $ body << (newPage dc nc $ takeChecked dc rz)
 
