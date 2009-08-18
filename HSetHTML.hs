@@ -88,7 +88,7 @@ showGreeting n = writePage dd 12 "Welcome!"
 cgiMain n = do nc <- liftM (read.(fromMaybe "0")) $ getInput "numCards"
                dc <- liftM (read.(fromMaybe "[]")) $ getInput "setDeck"
                rz <- mapM ((liftM $ fromMaybe "[]").getInput) $ take nc (map (('c':).show) [0..])
-               vt <- liftM (read.(fromMaybe "")) $ getInput "verToken"
+               vt <- liftM (fromMaybe "") $ getInput "verToken"
                if nc == 0 || vt /= vtok dc nc
                 then output $ renderHtml $ body << (showGreeting n)
                 else output $ renderHtml $ body << (newPage dc nc $ takeChecked dc rz)
