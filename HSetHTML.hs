@@ -77,8 +77,7 @@ writePage d n m s = h3 << m +++
                               hidden "verToken" ( vtok d n s ) :
                               hidden "userScore" sc :
                               cardsOnTable ++
-                              [br +++ submit "" "Submit"] ) +++
-                    paragraph << ("Score: " ++ sc)
+                              [br +++ submit "" "Submit" +++ spaceHtml +++ ("Score: " ++ sc)] )
     where dc = show d
           nc = show n
           sc = show s
