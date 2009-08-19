@@ -26,6 +26,7 @@ import System.Random (mkStdGen,randomIO)
 import qualified Data.Digest.MD5 as MD5
 import qualified Codec.Binary.BubbleBabble as BuBa
 import Data.Char (ord)
+import System.Time (getClockTime,TOD(..))
 
 #ifndef __SERVER_SECRET_KEY__
 #define __SERVER_SECRET_KEY__ "asdf"
