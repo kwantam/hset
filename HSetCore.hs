@@ -24,6 +24,7 @@ module HSetCore where
 import qualified Data.List as DL
 import HRandomState
 import System.Random (mkStdGen)
+import Control.Monad (mapM)
 
 -- an algebraic type per attribute
 data SetColor = Red | Green | Blue
@@ -34,6 +35,18 @@ data SetFill = Solid | Outline | Hashed
         deriving (Ord, Eq, Show)
 data SetNumb = One | Two | Three
         deriving (Ord, Eq, Show)
+
+-- attribute typeclass
+class SAttr x where
+        getAttr :: SetCard -> x
+instance SAttr SetColor where
+        getAttr = c_color
+instance SAttr SetShape where
+        getAttr = c_shape
+instance SAttr SetFill where
+        getAttr = c_fill
+instance SAttr SetNumb where
+        getAttr = c_numb
 
 -- put all this together into a datatype for the card
 data SetCard = SCard {
@@ -72,6 +85,9 @@ thirdCard a b = SCard (thirdColor (c_color a) (c_color b))
 -- check whether three cards make a set
 isSet a b c = c == (thirdCard a b)
 
+isSet_ (a:b:c:[]) = isSet a b c
+isSet_ _          = False
+
 -- replace members of rs with ss in the list ts
 replaceCards [] [] ts = ts
 replaceCards [] ss ts = ss++ts
@@ -87,3 +103,33 @@ replaceCards rs ss (t:ts) = if t `elem` rs
 identifySets lz = filter (\(x,y,z) -> isSet (lz !! x) (lz !! y) (lz !! z))
                     [ (x,y,z) | x <- [0..llz], y <- [x+1..llz], z <- [y+1..llz] ]
     where llz = length lz - 1
+
+identifySetsDisSort :: (Int -> Int -> Ordering) -> [SetCard] -> [(Int,Int,Int)]
+identifySetsDisSort f lz = sSets
+    where mySetDis = setDisElm lz
+          uSets = identifySets lz
+          uzSets = zip uSets $ map mySetDis uSets
+          szSets = DL.sortBy (\x y -> f (snd x) (snd y)) uzSets
+          sSets = map fst szSets
+
+setsLeastDis = identifySetsDisSort compare
+setsMostDis = identifySetsDisSort (flip compare)
+
+-- be sure x<y<z !!!
+deleteSet [] _ = []
+deleteSet ls (x,y,z) = ((DL.delete (ls !! x)).(DL.delete (ls !! y)).(DL.delete (ls !! z))) ls
+
+-- predicates for dissimilarity
+isDis :: (Eq x, SAttr x) => (SetCard -> x) -> SetCard -> SetCard -> Bool
+isDis f a b = if (f a) == (f b) then False else True
+disColor = isDis c_color
+disShape = isDis c_shape
+disFill  = isDis c_fill
+disNumb  = isDis c_numb
+allDisP = [disColor,disShape,disFill,disNumb]
+
+-- compute "dissimilarity" of a set
+setDis a b = length $ filter id $ (flip $ zipWith ($)) (repeat b) $ zipWith ($) allDisP (repeat a)
+setDis_ (a:b:[]) = setDis a b
+setDis_ _        = 0
+setDisElm ls (a,b,_) = setDis (ls !! a) (ls !! b)
