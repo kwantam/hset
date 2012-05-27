@@ -32,8 +32,12 @@ import System.Time (getClockTime,ClockTime(..))
 #define __SERVER_SECRET_KEY__ "asdf"
 #endif
 
+#ifndef __IMGDIR__
+#define __IMGDIR__ "/~kwantam/images/cards/"
+#endif
+
 -- directory where images are stored
-imgDir = "/~kwantam/images/cards/"
+imgDir = __IMGDIR__
 
 -- extract seconds from a ClockTime
 getClockSeconds :: (Integral a) => ClockTime -> a

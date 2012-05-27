@@ -16,7 +16,13 @@ import HSetCore
 import HSetGenSVG
 import HSetCompress
 import Control.Monad (mapM)
+import System.Environment (getArgs)
 
 main = do
+    args <- getArgs
+    let outDir = if length args == 0 then "setSVG/" else head args
     let theDeck = map (\x -> (x, compressCard x)) setDeck
-    mapM (\(x,y) -> writeFile ("setSVG/" ++ show y ++ ".svg") (svgHeader ++ mkCard x 0 0 ++ svgTail)) theDeck
+    mapM (\(x,y) -> writeFile (outDir ++ show y ++ ".svg")
+                              (svgHeader ++ mkCard x 0 0 ++ svgTail))
+         theDeck
+
